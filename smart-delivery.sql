@@ -476,7 +476,7 @@ GROUP BY dp.partner_id,dp.partner_name ORDER BY count_orders DESC;
 SELECT o.partner_id, ROUND(AVG(r.customer_rating),2) as avg_rating FROM orders o Join ratings r ON o.order_id = r.order_id 
 GROUP BY o.partner_id ORDER BY avg_rating DESC;
 
---partner ranking as per average customer rating 
+--partner ranking as per average customer rating
 SELECT dp.partner_id,dp.partner_name,ROUND(AVG(r.customer_rating), 2) AS avg_rating,DENSE_RANK() OVER (ORDER BY AVG(r.customer_rating) DESC) AS partner_rank
 FROM delivery_partners dp JOIN orders o ON dp.partner_id = o.partner_id JOIN ratings r ON o.order_id = r.order_id
 GROUP BY dp.partner_id,dp.partner_name ORDER BY partner_rank;
@@ -490,3 +490,11 @@ GROUP BY dp.partner_id, dp.partner_name;
 SELECT dp.partner_id, dp.partner_name, ROUND(AVG(EXTRACT(EPOCH FROM (o.delivered_time - o.order_time))/60),2) AS avg_delivery_time
 FROM delivery_partners dp JOIN orders o ON dp.partner_id = o.partner_id WHERE o.status = 'Delivered' GROUP BY dp.partner_id, dp.partner_name 
 ORDER BY avg_delivery_time;
+
+--Delivery partner with above the higest avg delay time
+SELECT dp.partner_id,dp.partner_name,ROUND(AVG(EXTRACT(EPOCH FROM (o.delivered_time - o.order_time))/60),2) AS avg_time FROM delivery_partners dp
+JOIN orders o ON dp.partner_id = o.partner_id WHERE o.status = 'Delivered' GROUP BY dp.partner_id,dp.partner_name 
+HAVING ROUND(AVG(EXTRACT(EPOCH FROM (o.delivered_time - o.order_time))/60),2) > 
+(SELECT ROUND(AVG(EXTRACT(EPOCH FROM (delivered_time - order_time))/60),2) AS avg_time FROM orders);
+
+
