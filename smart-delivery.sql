@@ -491,6 +491,7 @@ SELECT dp.partner_id, dp.partner_name, ROUND(AVG(EXTRACT(EPOCH FROM (o.delivered
 FROM delivery_partners dp JOIN orders o ON dp.partner_id = o.partner_id WHERE o.status = 'Delivered' GROUP BY dp.partner_id, dp.partner_name 
 ORDER BY avg_delivery_time;
 
+
 --Delivery partner with above the higest avg delay time
 SELECT dp.partner_id,dp.partner_name,ROUND(AVG(EXTRACT(EPOCH FROM (o.delivered_time - o.order_time))/60),2) AS avg_time FROM delivery_partners dp
 JOIN orders o ON dp.partner_id = o.partner_id WHERE o.status = 'Delivered' GROUP BY dp.partner_id,dp.partner_name 
